@@ -18,11 +18,11 @@ Usage
    
 Instantiate and configure the instance:
 
-    $matcher = new WPCOM_Platform_matcher();
+    $matcher = new WPCOM_Platform_Matcher();
     
 Provide a single regex to compare against the User Agent (or whatever string is given):
     
-    $matcher->on( "/ios/i", 'http://www.somewhere.com', 'Take me somewhere' );
+    $matcher->on( "/ios/i", 'http://www.somewhere.com' );
 
 Provide a closure to use to examine the UA to do some fancy comparing:
     
@@ -31,7 +31,7 @@ Provide a closure to use to examine the UA to do some fancy comparing:
         return true;
       }
       return false;
-    }, 'http://somewhereelse.com', 'Take me somewhere else' );
+    }, 'http://somewhereelse.com' );
 
 Provide an instance of any object that has an `__invoke` method:
 
@@ -45,23 +45,21 @@ Provide an instance of any object that has an `__invoke` method:
       }
     }
     
-    $matcher->prepend( new TrueEveryOther, "http://maybe.com", "True this time!" );
+    $matcher->prepend( new TrueEveryOther, "http://maybe.com" );
 
 
 You can also chain the methods:
     
-    $matcher->on( "/[\d]+/", "http://digitsareus.com", "We've got digits!" )
-               ->on( "/wordpress/i", "http://wordpress.com", "You're using WordPress" )
-               ->on( "/(one|two|three)/i", "http://numbers.com", "You can spell numbers" );
+    $matcher->on( "/[\d]+/", "http://digitsareus.com" )
+               ->on( "/wordpress/i", "http://wordpress.com" )
+               ->on( "/(one|two|three)/i", "http://numbers.com" );
                
 
 When you want to find a match for a User Agent then you:
 
     $match = $matcher->matching( 'Mozilla Whatever or something' );
-    extract( $match );
+    echo $match;
     
-    echo $href;
-    echo $label;
     
 
 

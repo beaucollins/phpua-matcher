@@ -10,7 +10,7 @@
  *	 $redirector = new WPCOM_Platform_Redirector();
  *
  *   // provide a single regex to compare against the ua
- *   $redirector->on( "/ios/i", 'http://www.somewhere.com', 'Take me somewhere' );
+ *   $redirector->on( "/ios/i", 'http://www.somewhere.com' );
  * 
  *   // provide a closure to use to examine the ua to do some fancy comparing
  *   $redirector->on( function( $ua ){
@@ -18,12 +18,12 @@
  *       return true;
  *     }
  *     return false;
- *   }, 'http://somewhereelse.com', 'Take me somewhere else' );
+ *   }, 'http://somewhereelse.com' );
  *
  *   // and it's chainable too
- *   $redirector->on( "/[\d]+/", "http://digitsareus.com", "We've got digits!" )
- *              ->on( "/wordpress/i", "http://wordpress.com", "You're using WordPress" )
- *              ->on( "/(one|two|three)/i", "http://numbers.com", "You can spell numbers" );
+ *   $redirector->on( "/[\d]+/", "http://digitsareus.com" )
+ *              ->on( "/wordpress/i", "http://wordpress.com" )
+ *              ->on( "/(one|two|three)/i", "http://numbers.com" );
  */
 class WPCOM_Platform_Redirector {
 
@@ -45,13 +45,13 @@ class WPCOM_Platform_Redirector {
 	 * Finds the first matching item for the given UA string
 	 *
 	 * @param  string $ua
-	 * @return Array
+	 * @return mixed
 	*/
 	public function matching( $ua ){
 		$match = $this->find( function( $matcher ) use ( $ua ) {
 			return $matcher['closure']->__invoke( $ua );
 		} );		
-		return is_array( $match ) ? $match : array();
+		return $match ? $match['memo'] : null;
 	}
 	
 	/**
@@ -81,14 +81,13 @@ class WPCOM_Platform_Redirector {
 	 * @param  string   $label
 	 * @return WPCOM_Platform_Redirector 
 	*/
-	public function on( $closure, $href, $label ){
+	public function on( $closure, $memo ){
 		
 		$matcher = $this->prepareClosure( $closure );
 		
 		array_push( $this->matchers, array(
 			'closure' => $matcher,
-			'href' => $href,
-			'label' => $label
+			'memo' => $memo
 		) );
 			
 		return $this;
@@ -103,14 +102,13 @@ class WPCOM_Platform_Redirector {
 	 * @param  string   $label
 	 * @return WPCOM_Platform_Redirector 
 	*/
-	public function prepend( $closure, $href, $label ){
+	public function prepend( $closure, $memo ){
 		
 		$matcher = $this->prepareClosure( $closure );
 		
 		array_unshift( $this->matchers, array(
 			'closure' => $matcher,
-			'href' => $href,
-			'label' => $label
+			'memo' => $memo
 		) );
 			
 		return $this;

@@ -7,8 +7,8 @@ class WPCOM_Platform_RedirectorTest extends PHPUnit_Framework_TestCase {
 	public function setUp(){
 		$this->matcher = new WPCOM_Platform_Redirector();
 		$this->matcher
-			->on( function( $ua ){ return $ua == 'Awesomesauce Browser 2.1'; }, 'URL', 'LABEL' )
-			->on( function( $ua ){ return $ua == 'Awesomesauce Browser 2.0'; }, 'URL2', 'LABEL2');
+			->on( function( $ua ){ return $ua == 'Awesomesauce Browser 2.1'; }, array( 'href' => 'URL', 'label' => 'LABEL' ) )
+			->on( function( $ua ){ return $ua == 'Awesomesauce Browser 2.0'; }, array( 'href' => 'URL2', 'label' => 'LABEL2') );
 		
 	}
 	
@@ -17,10 +17,11 @@ class WPCOM_Platform_RedirectorTest extends PHPUnit_Framework_TestCase {
 		$this->matcher
 		->on( function( $ua ){
 			return preg_match( "/(ipad|iphone|ipod|ios)/i", $ua );
-		}, 'itms://somewhere', 'Open WordPress for iOS in the App Store' )
-		->on( "/android/i", 'android://something', 'Open WordPress for Android in the Google Play store' );
+		}, array( 'href' => 'itms://somewhere', 'label' => 'Open WordPress for iOS in the App Store' ) )
+		->on( "/android/i", array( 'href' => 'android://something', 'label' => 'Open WordPress for Android in the Google Play store' ) );
 		
-		extract( $this->matcher->matching( "Mozilla/5.0 (iPad; U; CPU OS 4_3_3 like Mac OS X; en-us) AppleWebKit/533.17.9 (KHTML, like Gecko) Version/5.0.2 Mobile/8J2 Safari/6533.18.5" ) );
+		$match = $this->matcher->matching( "Mozilla/5.0 (iPad; U; CPU OS 4_3_3 like Mac OS X; en-us) AppleWebKit/533.17.9 (KHTML, like Gecko) Version/5.0.2 Mobile/8J2 Safari/6533.18.5" );
+		extract( $match  );
 		
 		$this->assertSame( 'itms://somewhere', $href );
 		$this->assertSame( 'Open WordPress for iOS in the App Store', $label );
@@ -34,7 +35,7 @@ class WPCOM_Platform_RedirectorTest extends PHPUnit_Framework_TestCase {
 	
 	public function testPrepend(){
 		
-		$this->matcher->prepend( "/[\d]/", 'http://digits.com', 'Digits' );
+		$this->matcher->prepend( "/[\d]/", array( 'href' => 'http://digits.com', 'label' => 'Digits' ) );
 		extract( $this->matcher->matching( "Awesomesauce Browser 2.1" ) );
 		$this->assertSame( 'http://digits.com', $href );
 		$this->assertSame( 'Digits', $label );
@@ -46,7 +47,7 @@ class WPCOM_Platform_RedirectorTest extends PHPUnit_Framework_TestCase {
 		// look mom, it's chainable
 		$urls = array();
 		$this->matcher->each( function( $item ) use ( &$urls ){
-			array_push( $urls, $item['href'] );
+			array_push( $urls, $item['memo']['href'] );
 		});
 		
 		$this->assertSame( array( 'URL', 'URL2' ), $urls );
@@ -57,7 +58,7 @@ class WPCOM_Platform_RedirectorTest extends PHPUnit_Framework_TestCase {
 		
 		$this->assertSame( array( 'URL', 'URL2' ),
 			$this->matcher->map( function( $item ){
-				return $item['href'];
+				return $item['memo']['href'];
 			} )
 		);
 	}
@@ -66,8 +67,8 @@ class WPCOM_Platform_RedirectorTest extends PHPUnit_Framework_TestCase {
 		
 		$this->assertSame( 'URL2',
 			$this->matcher->find( function( $item ){
-				return preg_match( "/[\d]+/", $item['href'] );
-			} )['href']
+				return preg_match( "/[\d]+/", $item['memo']['href'] );
+			} )['memo']['href']
 		);
 		
 	}
@@ -76,8 +77,8 @@ class WPCOM_Platform_RedirectorTest extends PHPUnit_Framework_TestCase {
 		
 		$this->assertSame( 'URL2',
 			$this->matcher->findAll( function( $item ){
-				return preg_match( "/[\d]+/", $item['href'] );
-			} )[0]['href']
+				return preg_match( "/[\d]+/", $item['memo']['href'] );
+			} )[0]['memo']['href']
 		);
 		
 	}
@@ -86,7 +87,7 @@ class WPCOM_Platform_RedirectorTest extends PHPUnit_Framework_TestCase {
 		
 		$this->assertSame( 7,
 			$this->matcher->reduce( 0, function( $len, $item ){
-				return $len + strlen( $item['href'] );
+				return $len + strlen( $item['memo']['href'] );
 			} )
 		);
 		
@@ -96,7 +97,7 @@ class WPCOM_Platform_RedirectorTest extends PHPUnit_Framework_TestCase {
 		
 		$ua = 'Awesomesauce Browser 2.1' ;
 		
-		$this->matcher->prepend( new EveryOtherMatcher, 'http://maybe.com', 'Maybe' );
+		$this->matcher->prepend( new EveryOtherMatcher, array( 'href' => 'http://maybe.com', 'label' => 'Maybe' ) );
 		
 		$first = $this->matcher->matching( $ua );
 		$second = $this->matcher->matching( $ua );
