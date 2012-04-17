@@ -4,7 +4,7 @@ UA Matcher
 For certain platforms we want to have a way to direct users on those platforms to
 the corresponding store that contains our native app. For instance, user goes to
 
-   http://example.com/landing-page
+  http://example.com/landing-page
    
 And on that page is a button or link that tells the user to click on it to go to the
 Apple App Store to download WordPress for iOS.
@@ -24,7 +24,7 @@ Provide a single regex to compare against the User Agent (or whatever string is 
     
     $matcher->on( "/ios/i", 'http://www.somewhere.com', 'Take me somewhere' );
 
-Provide a closure to use to examine the ua to do some fancy comparing:
+Provide a closure to use to examine the UA to do some fancy comparing:
     
     $matcher->on( function( $ua ){
       if ( strlen( $ua ) > 10 && preg_match( "/something/i", $ua ) ) {
