@@ -59,6 +59,15 @@ When you want to find a match for a User Agent then you:
 
     $match = $matcher->matching( 'Mozilla Whatever or something' );
     echo $match;
+		
+Running Tests
+-------------
+
+First time PHPUnit user and this is how I ran the tests:
+
+    phpunit Tests/WPCOM_Platform_RedirectorTests
+		
+
     
     
 
