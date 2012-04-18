@@ -49,7 +49,7 @@ class WPCOM_Platform_Redirector {
 	*/
 	public function matching( $ua ){
 		$match = $this->find( function( $matcher ) use ( $ua ) {
-			return $matcher['closure']->__invoke( $ua );
+			return $matcher['closure']( $ua );
 		} );		
 		return $match ? $match['memo'] : null;
 	}
@@ -123,7 +123,7 @@ class WPCOM_Platform_Redirector {
 	*/
 	public function each( $closure ){
 		foreach( $this->matchers as $item ){
-			$closure->__invoke( $item );
+			$closure( $item );
 		}
 	}
 	
@@ -138,7 +138,7 @@ class WPCOM_Platform_Redirector {
 	public function map( $closure ){
 		$mapped = array();
 		$this->each( function( $item ) use ( &$mapped, $closure ) {
-			array_push( $mapped, $closure->__invoke( $item ) );
+			array_push( $mapped, $closure( $item ) );
 		} );
 		return $mapped;
 	}
@@ -153,7 +153,7 @@ class WPCOM_Platform_Redirector {
 	*/
 	public function reduce( $aggregator, $closure ){
 		$this->each( function( $item ) use ( &$aggregator, $closure ) {
-			$aggregator = $closure->__invoke( $aggregator, $item );
+			$aggregator = $closure( $aggregator, $item );
 		} );
 		return $aggregator;
 	}
@@ -167,7 +167,7 @@ class WPCOM_Platform_Redirector {
 	*/
 	public function find( $closure ){
 		foreach( $this->matchers as $item ){
-			$val = $closure->__invoke( $item );
+			$val = $closure( $item );
 			if ( $val ) return $item;
 		}
 	}
@@ -182,7 +182,7 @@ class WPCOM_Platform_Redirector {
 	*/
 	public function findAll( $closure ){
 		return $this->reduce( array(), function( $matches, $item ) use ( $closure ) {
-			$val = $closure->__invoke( $item );
+			$val = $closure( $item );
 			if ( $val ) array_push( $matches, $item );
 			return $matches;
 		} );
