@@ -50,9 +50,10 @@ Provide an instance of any object that has an `__invoke` method:
 
 You can also chain the methods:
     
-    $matcher->on( "/[\d]+/", "http://digitsareus.com" )
-               ->on( "/wordpress/i", "http://wordpress.com" )
-               ->on( "/(one|two|three)/i", "http://numbers.com" );
+    $matcher
+      ->on( "/[\d]+/", "http://digitsareus.com" )
+      ->on( "/wordpress/i", "http://wordpress.com" )
+      ->on( "/(one|two|three)/i", "http://numbers.com" );
                
 
 When you want to find a match for a User Agent then you:
